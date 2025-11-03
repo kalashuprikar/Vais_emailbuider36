@@ -52,6 +52,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export default function Settings() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   const [notifications, setNotifications] = useState({
