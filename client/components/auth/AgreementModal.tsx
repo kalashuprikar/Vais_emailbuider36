@@ -252,7 +252,8 @@ export default function AgreementModal({
                   htmlFor="agreementConfirmed"
                   className="text-sm text-valasys-gray-700 cursor-pointer"
                 >
-                  I have read the entire agreement, understood all the terms and conditions, and I agree to the Master Subscriber Agreement
+                  I have read the entire agreement, understood all the terms and
+                  conditions, and I agree to the Master Subscriber Agreement
                 </label>
               </div>
             </div>
