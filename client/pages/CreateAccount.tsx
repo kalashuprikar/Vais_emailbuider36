@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ArrowLeft,
   ArrowRight,
@@ -26,6 +27,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import IntegrationsFooter from "@/components/auth/IntegrationsFooter";
 import AssociationPartners from "@/components/auth/AssociationPartners";
+import AgreementModal from "@/components/auth/AgreementModal";
 
 export default function CreateAccount() {
   const [mounted, setMounted] = useState(false);
