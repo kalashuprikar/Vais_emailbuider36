@@ -893,7 +893,9 @@ export default function VAISResults() {
                   <Badge
                     variant="secondary"
                     className="bg-gray-100 cursor-pointer hover:bg-gray-200 transition-colors"
-                    onClick={() => selectedItems.length > 0 && handleSelectAll(false)}
+                    onClick={() =>
+                      selectedItems.length > 0 && handleSelectAll(false)
+                    }
                   >
                     {selectedItems.length > 0
                       ? `Clear ${selectedItems.length} Items Selected`
@@ -902,7 +904,9 @@ export default function VAISResults() {
                   <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
                     <Checkbox
                       checked={selectedItems.length > 0}
-                      onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+                      onCheckedChange={(checked) =>
+                        handleSelectAll(checked as boolean)
+                      }
                     />
                     <span className="text-sm text-gray-600 font-medium">
                       {selectedItems.length > 0 ? "Deselect All" : "Select All"}
