@@ -209,7 +209,6 @@ export const BlockActions: React.FC<BlockActionsProps> = ({
         size="sm"
         className="h-8 w-8 p-0 hover:bg-gray-100"
         onClick={() => {
-          // We need the actual block to duplicate, so this will be handled by a callback
           onDuplicate({} as ContentBlock, blockIndex + 1);
         }}
         title="Duplicate block"
