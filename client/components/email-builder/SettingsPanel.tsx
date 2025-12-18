@@ -19,6 +19,8 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   block,
   onBlockUpdate,
   onBlockDelete,
+  selectedFooterElement,
+  onFooterElementSelect,
 }) => {
   const [groupPaddingSides, setGroupPaddingSides] = useState(true);
   const [groupMarginSides, setGroupMarginSides] = useState(false);
