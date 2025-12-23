@@ -1314,19 +1314,12 @@ export default function MyDownloadedList() {
                     SF
                   </span>
                 )}
-                {selectedCrm === "marketo" && (
-                  <span className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-[#5C4BAF] text-white text-xs font-bold">
-                    MK
-                  </span>
-                )}
                 <div>
                   <DialogTitle>
                     Send to{" "}
                     {selectedCrm === "hubspot"
                       ? "HubSpot"
-                      : selectedCrm === "salesforce"
-                        ? "Salesforce"
-                        : "Marketo"}
+                      : "Salesforce"}
                   </DialogTitle>
                   <DialogDescription className="mt-1">
                     Import CSV file "{crmFile?.fileName}" with{" "}
