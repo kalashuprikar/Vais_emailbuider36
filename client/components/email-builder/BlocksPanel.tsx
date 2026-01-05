@@ -316,7 +316,13 @@ const SectionsPanel: React.FC<SectionsPanelProps> = ({ onAddBlock }) => {
   ];
 
   const toggleSection = (title: string) => {
-    setExpandedSection(expandedSection === title ? null : title);
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(title)) {
+      newExpanded.delete(title);
+    } else {
+      newExpanded.add(title);
+    }
+    setExpandedSections(newExpanded);
   };
 
   const handleAddBlocks = (blocks: ContentBlock[]) => {
