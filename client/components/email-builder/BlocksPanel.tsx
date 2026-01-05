@@ -86,7 +86,7 @@ const DraggableBlockButton: React.FC<DraggableBlockProps> = ({ block }) => {
         isDragging ? "opacity-50 scale-95" : ""
       }`}
     >
-      <div className="mb-4 relative">
+      <div className="mb-4 relative pt-3">
         {block.icon}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-valasys-orange">
           <GripHorizontal className="w-4 h-4" />
