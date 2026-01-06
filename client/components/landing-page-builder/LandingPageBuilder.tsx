@@ -159,7 +159,7 @@ export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Left Sidebar - Blocks Panel */}
-      <div className="w-72 bg-white border-r border-gray-200 overflow-y-auto flex flex-col">
+      <div className="w-72 bg-white border-r border-gray-200 overflow-hidden flex flex-col">
         <div className="sticky top-0 z-20 bg-white border-b border-gray-200 p-4">
           <Button
             variant="ghost"
