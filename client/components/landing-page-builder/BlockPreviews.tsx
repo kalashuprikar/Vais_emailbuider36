@@ -314,7 +314,11 @@ export const SpacerBlockPreview: React.FC<BlockPreviewProps> = ({
     <div
       onClick={onSelect}
       style={{ height: props.height || "60px" }}
-      className={`border-2 border-dashed border-gray-300 ${isSelected ? "bg-orange-50" : "bg-gray-50"}`}
+      className={`border-2 border-dashed cursor-pointer transition-all ${
+        isSelected
+          ? "border-valasys-orange bg-orange-50"
+          : "border-gray-300 bg-gray-50"
+      }`}
     />
   );
 };
