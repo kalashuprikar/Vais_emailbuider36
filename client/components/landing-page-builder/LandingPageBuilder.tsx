@@ -32,6 +32,7 @@ export const LandingPageBuilder: React.FC<LandingPageBuilderProps> = ({
   const [pageName, setPageName] = useState("");
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSectionsPanelOpen, setIsSectionsPanelOpen] = useState(false);
 
   useEffect(() => {
     if (pageId) {
