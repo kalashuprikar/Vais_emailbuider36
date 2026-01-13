@@ -207,6 +207,7 @@ export function createProductBlock(): ProductBlock {
     buttonText: "Buy Now",
     buttonLink: "#",
     alignment: "center",
+    imagePosition: "center",
     padding: 0,
     margin: 0,
     borderWidth: 0,
