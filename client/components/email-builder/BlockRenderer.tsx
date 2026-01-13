@@ -20,6 +20,7 @@ import { CenteredImageCardBlockComponent } from "./blocks/CenteredImageCardBlock
 import { SplitImageCardBlockComponent } from "./blocks/SplitImageCardBlockComponent";
 import { TwoColumnCardBlockComponent } from "./blocks/TwoColumnCardBlockComponent";
 import { StatsBlockComponent } from "./blocks/StatsBlockComponent";
+import { FeaturesBlockComponent } from "./blocks/FeaturesBlockComponent";
 
 interface BlockRendererProps {
   block: ContentBlock;
@@ -229,6 +230,16 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({
       return (
         <div onClick={handleClick}>
           <StatsBlockComponent
+            block={block as any}
+            isSelected={isSelected}
+            onUpdate={(updatedBlock) => onBlockUpdate(updatedBlock)}
+          />
+        </div>
+      );
+    case "features":
+      return (
+        <div onClick={handleClick}>
+          <FeaturesBlockComponent
             block={block as any}
             isSelected={isSelected}
             onUpdate={(updatedBlock) => onBlockUpdate(updatedBlock)}

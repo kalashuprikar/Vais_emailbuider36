@@ -621,37 +621,52 @@ export function createStatsBlock() {
   };
 }
 
-export function createFeaturesBlock(): HtmlBlock {
+export function createFeaturesBlock() {
   return {
-    type: "html",
+    type: "features" as const,
     id: generateId(),
-    content: `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin: 20px 0;">
-      <tr>
-        <td width="33%" style="text-align: center; padding: 20px;">
-          <div style="font-size: 32px; margin-bottom: 12px;">❤️</div>
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold; color: #000;">Some title here</h3>
-          <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </td>
-        <td width="33%" style="text-align: center; padding: 20px;">
-          <div style="font-size: 32px; margin-bottom: 12px;">🎁</div>
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold; color: #000;">Some title here</h3>
-          <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </td>
-        <td width="33%" style="text-align: center; padding: 20px;">
-          <div style="font-size: 32px; margin-bottom: 12px;">ℹ️</div>
-          <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold; color: #000;">Some title here</h3>
-          <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.5;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </td>
-      </tr>
-    </table>`,
+    features: [
+      {
+        id: generateId(),
+        icon: "❤️",
+        title: "Feature One",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        fontSize: 14,
+        titleFontSize: 16,
+        textColor: "#000000",
+        backgroundColor: "#ffffff",
+        padding: 20,
+        borderRadius: 8,
+      },
+      {
+        id: generateId(),
+        icon: "🎁",
+        title: "Feature Two",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        fontSize: 14,
+        titleFontSize: 16,
+        textColor: "#000000",
+        backgroundColor: "#ffffff",
+        padding: 20,
+        borderRadius: 8,
+      },
+      {
+        id: generateId(),
+        icon: "ℹ️",
+        title: "Feature Three",
+        description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        fontSize: 14,
+        titleFontSize: 16,
+        textColor: "#000000",
+        backgroundColor: "#ffffff",
+        padding: 20,
+        borderRadius: 8,
+      },
+    ],
     width: 100,
     widthUnit: "%",
-    padding: 0,
-    margin: 0,
-    borderWidth: 0,
-    borderColor: "#000000",
-    borderRadius: 0,
-    visibility: "all",
+    columnsCount: 3,
+    visibility: "all" as const,
   };
 }
 
@@ -899,6 +914,22 @@ export function renderBlockToHTML(block: ContentBlock): string {
         })
         .join("");
       return `<div style="width: ${width}; margin: 20px 0;">${statsHtml}</div>`;
+    }
+    case "features": {
+      const featuresBlock = block as any;
+      const width = `${featuresBlock.width}${featuresBlock.widthUnit}`;
+      const featuresHtml = featuresBlock.features
+        ?.map((feature: any) => {
+          return `<div style="flex: 1; min-width: 0; text-align: center; padding: 0 10px; box-sizing: border-box;">
+              <div style="background-color: ${feature.backgroundColor}; border-radius: ${feature.borderRadius}px; padding: ${feature.padding}px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: 100%;">
+                <div style="font-size: 32px; margin-bottom: 12px; line-height: 1;">${feature.icon}</div>
+                <h3 style="margin: 0 0 8px 0; font-size: ${feature.titleFontSize}px; font-weight: bold; color: ${feature.textColor};">${feature.title}</h3>
+                <p style="margin: 0; font-size: ${feature.fontSize}px; color: ${feature.textColor}; line-height: 1.5;">${feature.description}</p>
+              </div>
+            </div>`;
+        })
+        .join("");
+      return `<div style="width: ${width}; margin: 20px 0; display: flex; flex-wrap: nowrap; gap: 0; align-items: stretch;">${featuresHtml}</div>`;
     }
     case "divider":
       return `<hr style="border: none; border-top: ${block.height}px solid ${block.color}; margin: ${block.margin}px 0;" />`;
