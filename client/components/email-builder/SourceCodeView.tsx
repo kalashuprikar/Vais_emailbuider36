@@ -109,44 +109,42 @@ export const SourceCodeView: React.FC<SourceCodeViewProps> = ({ template }) => {
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
       {/* Header with Actions - Fixed at top */}
       <div className="bg-white border-b border-gray-200 p-4 shadow-sm flex-shrink-0">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0 flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-gray-800">
-              HTML Source Code
-            </h2>
-            <TooltipProvider delayDuration={200}>
-              <div className="flex items-center gap-1">
-                <Tooltip open={openTooltip} onOpenChange={setOpenTooltip}>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={handleCopy}>
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent className="font-medium" side="top">
-                    {copied ? "Copied!" : "Copy Code"}
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Download className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-max">
-                    <DropdownMenuItem
-                      onClick={handleDownloadInlineHTML}
-                      className="py-2.5"
-                    >
-                      <Download className="w-4 h-4 mr-3" />
-                      Download Pure HTML
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </TooltipProvider>
-          </div>
+        <div className="flex items-center justify-between gap-4 mb-2">
+          <h2 className="text-lg font-semibold text-gray-800">
+            HTML Source Code
+          </h2>
+          <TooltipProvider delayDuration={200}>
+            <div className="flex items-center gap-2">
+              <Tooltip open={openTooltip} onOpenChange={setOpenTooltip}>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" onClick={handleCopy}>
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="font-medium" side="top">
+                  {copied ? "Copied!" : "Copy Code"}
+                </TooltipContent>
+              </Tooltip>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-max">
+                  <DropdownMenuItem
+                    onClick={handleDownloadInlineHTML}
+                    className="py-2.5"
+                  >
+                    <Download className="w-4 h-4 mr-3" />
+                    Download Pure HTML
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </TooltipProvider>
         </div>
-        <p className="text-sm text-gray-600 mt-2 truncate">
+        <p className="text-sm text-gray-600 truncate">
           Complete HTML for: {template.name || "Untitled Template"}
         </p>
       </div>
