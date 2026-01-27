@@ -284,6 +284,15 @@ export const EmailBuilder: React.FC<EmailBuilderProps> = ({
                 {previewMode ? "Edit" : "Preview & test"}
               </Button>
               <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownloadHTML}
+                className="gap-2"
+              >
+                <Download className="w-4 h-4" />
+                Download HTML
+              </Button>
+              <Button
                 onClick={() => setShowSaveDialog(true)}
                 className="gap-2 bg-valasys-orange hover:bg-valasys-orange/90 text-white"
               >
