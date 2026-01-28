@@ -47,7 +47,15 @@ export const ButtonBlockComponent: React.FC<ButtonBlockComponentProps> = ({
         margin: `${block.margin}px`,
       }}
     >
-      <div style={{ position: "relative", display: "inline-block", overflow: "visible" }}>
+      <div
+        style={{
+          position: "relative",
+          display: "inline-block",
+          overflow: "visible"
+        }}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
         <button
           style={{
             backgroundColor: block.backgroundColor,
@@ -61,8 +69,6 @@ export const ButtonBlockComponent: React.FC<ButtonBlockComponentProps> = ({
             width: buttonWidth,
             textAlign: "center",
           }}
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
           disabled
         >
           {block.text}
@@ -71,22 +77,19 @@ export const ButtonBlockComponent: React.FC<ButtonBlockComponentProps> = ({
           <div
             style={{
               position: "absolute",
-              bottom: "calc(100% + 8px)",
+              bottom: "calc(100% + 10px)",
               left: "50%",
               transform: "translateX(-50%)",
-              backgroundColor: "#333",
-              color: "#fff",
-              padding: "8px 12px",
+              backgroundColor: "#333333",
+              color: "#ffffff",
+              padding: "6px 10px",
               borderRadius: "4px",
               fontSize: "12px",
               whiteSpace: "nowrap",
-              zIndex: 9999,
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+              zIndex: 10000,
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.25)",
               fontWeight: "normal",
               pointerEvents: "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
             }}
           >
             {block.linkTooltip}
@@ -95,12 +98,10 @@ export const ButtonBlockComponent: React.FC<ButtonBlockComponentProps> = ({
                 position: "absolute",
                 top: "100%",
                 left: "50%",
-                transform: "translateX(-50%)",
+                marginLeft: "-4px",
                 borderLeft: "4px solid transparent",
                 borderRight: "4px solid transparent",
-                borderTop: "4px solid #333",
-                width: 0,
-                height: 0,
+                borderTop: "4px solid #333333",
               }}
             />
           </div>
