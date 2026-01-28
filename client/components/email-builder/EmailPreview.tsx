@@ -35,7 +35,14 @@ export const EmailPreview: React.FC<EmailPreviewProps> = ({ template }) => {
     }
   };
 
-  const htmlContent = template.blocks
+  const filteredBlocks = template.blocks.filter((block) => {
+    if (block.visibility === "all") return true;
+    if (device === "mobile") return block.visibility === "mobile";
+    // Treat tablet as desktop
+    return block.visibility === "desktop";
+  });
+
+  const htmlContent = filteredBlocks
     .map((block) => renderBlockToHTML(block))
     .join("");
 
