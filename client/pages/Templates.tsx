@@ -194,14 +194,35 @@ export default function Templates() {
           </div>
         ) : (
           <>
-            {/* Search */}
-            <div>
+            {/* Search and Redirect Section */}
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
               <Input
                 placeholder="Search templates by name or subject..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="max-w-md"
               />
+              <div className="flex gap-2 w-full md:w-auto">
+                <Input
+                  placeholder="Enter URL to redirect..."
+                  value={redirectUrl}
+                  onChange={(e) => setRedirectUrl(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleRedirect();
+                    }
+                  }}
+                  className="flex-1 md:flex-none md:w-48"
+                />
+                <Button
+                  onClick={handleRedirect}
+                  className="bg-valasys-orange hover:bg-valasys-orange/90 text-white"
+                  disabled={!redirectUrl.trim()}
+                  title="Redirect to URL"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
 
             {/* Templates Grid */}
