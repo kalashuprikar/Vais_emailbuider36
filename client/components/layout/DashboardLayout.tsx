@@ -243,8 +243,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const el = e.currentTarget as HTMLElement;
     const rect = el.getBoundingClientRect();
     setManageUsersTooltipPos({
-      left: rect.right + 12,
-      top: rect.top + rect.height / 2,
+      left: rect.left + rect.width / 2,
+      top: rect.bottom + 12,
     });
     setManageUsersTooltipVisible(true);
   };
