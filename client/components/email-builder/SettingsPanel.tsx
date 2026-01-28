@@ -144,11 +144,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       id="titleWidth"
                       type="number"
                       min="0"
+                      step="any"
                       value={
                         isNaN(block.width as any) ? 100 : (block.width ?? 100)
                       }
                       onChange={(e) => {
-                        const value = parseInt(e.target.value) || 100;
+                        const value = e.target.value ? parseInt(e.target.value) : 100;
                         onBlockUpdate({
                           ...block,
                           width: value,
