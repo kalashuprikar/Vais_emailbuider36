@@ -335,7 +335,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs text-gray-700">Margin</Label>
                   </div>
-                  {!groupMarginSides ? (
+                  {groupMarginSides ? (
                     <div className="flex gap-2">
                       <Input
                         type="number"
@@ -882,7 +882,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs text-gray-700">Margin</Label>
                   </div>
-                  {!groupMarginSides ? (
+                  {groupMarginSides ? (
                     <div className="flex gap-2">
                       <Input
                         type="number"
@@ -1595,7 +1595,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs text-gray-700">Margin</Label>
                   </div>
-                  {!groupMarginSides ? (
+                  {groupMarginSides ? (
                     <div className="flex gap-2">
                       <Input
                         type="number"
@@ -4483,7 +4483,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-xs text-gray-700">Margin</Label>
                   </div>
-                  {!groupMarginSides ? (
+                  {groupMarginSides ? (
                     <div className="flex gap-2">
                       <Input
                         type="number"
