@@ -3742,7 +3742,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <Input
                       type="text"
                       inputMode="numeric"
-                      value={block.width ?? 300}
+                      value={String(block.width ?? 300)}
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         const numericValue = inputValue.replace(/[^\d]/g, "");
@@ -3784,7 +3784,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     <Input
                       type="text"
                       inputMode="numeric"
-                      value={block.height ?? 200}
+                      value={String(block.height ?? 200)}
                       onChange={(e) => {
                         const inputValue = e.target.value;
                         const numericValue = inputValue.replace(/[^\d]/g, "");
