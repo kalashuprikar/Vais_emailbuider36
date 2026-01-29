@@ -106,7 +106,8 @@ export const CenteredImageCardBlockComponent: React.FC<
               <img
                 src={block.image}
                 alt={block.imageAlt}
-                className="w-full h-auto rounded-lg"
+                onClick={() => setEditMode("image")}
+                className="w-full h-auto rounded-lg cursor-pointer"
               />
               <label className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-40 opacity-0 group-hover:opacity-100 transition-all cursor-pointer rounded-lg">
                 <Upload className="w-6 h-6 text-white" />
@@ -132,6 +133,7 @@ export const CenteredImageCardBlockComponent: React.FC<
               />
             </label>
           )}
+          {editMode === "image" && <SectionToolbar />}
         </div>
 
         <div className="space-y-4 text-center">
