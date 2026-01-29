@@ -143,7 +143,7 @@ export const CenteredImageCardBlockComponent: React.FC<
               />
             </label>
           )}
-          {editMode === "image" && <SectionToolbar />}
+          {editMode === "image" && <SectionToolbar sectionType="image" />}
         </div>
 
         <div className="space-y-4 text-center">
@@ -164,7 +164,7 @@ export const CenteredImageCardBlockComponent: React.FC<
                 {block.title}
               </h3>
             )}
-            {editMode === "title" && <SectionToolbar />}
+            {editMode === "title" && <SectionToolbar sectionType="title" />}
           </div>
 
           <div>
@@ -187,7 +187,7 @@ export const CenteredImageCardBlockComponent: React.FC<
                 {block.description}
               </p>
             )}
-            {editMode === "description" && <SectionToolbar />}
+            {editMode === "description" && <SectionToolbar sectionType="description" />}
           </div>
 
           <div className="pt-2">
@@ -211,7 +211,7 @@ export const CenteredImageCardBlockComponent: React.FC<
                 </button>
               </div>
             )}
-            {editMode === "buttonText" && <SectionToolbar />}
+            {editMode === "buttonText" && <SectionToolbar sectionType="buttonText" />}
           </div>
 
           {editMode === "buttonLink" && (
