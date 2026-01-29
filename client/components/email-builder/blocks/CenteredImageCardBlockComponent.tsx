@@ -188,8 +188,7 @@ export const CenteredImageCardBlockComponent: React.FC<
                 }
                 onBlur={() => setEditMode(null)}
                 autoFocus
-                className="w-full p-2 rounded text-sm text-gray-600 min-h-24"
-                style={{ borderStyle: "dotted", borderColor: "#d1d5db", borderWidth: "1px" }}
+                className="w-full p-2 rounded text-sm text-gray-600 min-h-24 border border-dotted border-valasys-orange focus:outline-none focus:ring-2 focus:ring-valasys-orange focus:border-transparent"
               />
             ) : (
               <p
