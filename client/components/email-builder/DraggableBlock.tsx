@@ -91,6 +91,10 @@ export const DraggableBlock: React.FC<DraggableBlockProps> = ({
         onBlockSelect={onBlockSelect}
         onEditingBlockChange={onEditingBlockChange}
         onFooterElementSelect={onFooterElementSelect}
+        onAddBlock={onAddBlock}
+        onDuplicate={onDuplicate}
+        onDelete={onDelete}
+        blockIndex={index}
       />
 
       {isSelected && (
