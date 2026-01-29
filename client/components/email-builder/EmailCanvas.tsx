@@ -153,7 +153,6 @@ export const EmailCanvas: React.FC<EmailCanvasProps> = ({
                     onAddBlock(newBlock, position);
                   }}
                   onDuplicate={(blockToDuplicate, position) => {
-                    console.log("onDuplicate callback triggered:", { position, blockType: blockToDuplicate.type });
                     onDuplicateBlock?.(blockToDuplicate, position);
                   }}
                   onDelete={(blockId) => onDeleteBlock?.(blockId)}
