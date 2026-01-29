@@ -57,6 +57,7 @@ export const EmailBuilder: React.FC<EmailBuilderProps> = ({
   });
 
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [editingBlockId, setEditingBlockId] = useState<string | null>(null);
   const [selectedFooterElement, setSelectedFooterElement] = useState<
     string | null
   >(null);
