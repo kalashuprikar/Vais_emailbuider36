@@ -277,12 +277,13 @@ export const CenteredImageCardBlockComponent: React.FC<
                   src={block.image}
                   alt={block.imageAlt}
                   onClick={() => setEditMode("image")}
-                  className="w-full h-auto rounded-lg cursor-pointer"
+                  className="w-full rounded-lg cursor-pointer"
                   style={{
-                    width: block.width ? `${block.width}px` : "100%",
+                    width: "100%",
                     height: "auto",
                     objectFit: "cover",
                     display: "block",
+                    maxWidth: "100%",
                   }}
                 />
 
