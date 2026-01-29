@@ -9,7 +9,6 @@ interface SplitImageCardBlockComponentProps {
   block: SplitImageCardBlock;
   isSelected: boolean;
   onBlockUpdate: (block: SplitImageCardBlock) => void;
-  onBlockDelete?: () => void;
 }
 
 export const SplitImageCardBlockComponent: React.FC<
