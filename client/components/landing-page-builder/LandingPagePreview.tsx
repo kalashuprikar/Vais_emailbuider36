@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, ChevronUp, ChevronDown, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LandingPage, LandingPageBlock } from "./types";
 import {
