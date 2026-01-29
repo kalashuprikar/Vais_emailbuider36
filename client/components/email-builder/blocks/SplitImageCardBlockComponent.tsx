@@ -208,7 +208,7 @@ export const SplitImageCardBlockComponent: React.FC<
                   )}
                 </div>
               ) : (
-                <>
+                <div className="space-y-2">
                   <label className="flex items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
                     <div className="flex flex-col items-center justify-center">
                       <Upload className="w-6 h-6 text-gray-400 mb-2" />
@@ -221,8 +221,25 @@ export const SplitImageCardBlockComponent: React.FC<
                       className="hidden"
                     />
                   </label>
-                  {isHoveringImage && <SectionToolbar sectionType="image" />}
-                </>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Or paste image URL..."
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleImageUrlSubmit()}
+                      className="flex-1 text-xs"
+                    />
+                    <Button
+                      onClick={handleImageUrlSubmit}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           )}
@@ -407,7 +424,7 @@ export const SplitImageCardBlockComponent: React.FC<
                   )}
                 </div>
               ) : (
-                <>
+                <div className="space-y-2">
                   <label className="flex items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
                     <div className="flex flex-col items-center justify-center">
                       <Upload className="w-6 h-6 text-gray-400 mb-2" />
@@ -420,8 +437,25 @@ export const SplitImageCardBlockComponent: React.FC<
                       className="hidden"
                     />
                   </label>
-                  {isHoveringImage && <SectionToolbar sectionType="image" />}
-                </>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Or paste image URL..."
+                      value={imageUrlInput}
+                      onChange={(e) => setImageUrlInput(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleImageUrlSubmit()}
+                      className="flex-1 text-xs"
+                    />
+                    <Button
+                      onClick={handleImageUrlSubmit}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
           )}
