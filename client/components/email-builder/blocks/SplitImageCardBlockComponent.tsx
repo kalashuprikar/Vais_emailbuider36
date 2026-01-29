@@ -160,7 +160,12 @@ export const SplitImageCardBlockComponent: React.FC<
                 ) : (
                   <button
                     onClick={() => setEditMode("buttonText")}
-                    className="py-2 px-4 bg-valasys-orange text-white rounded text-sm font-bold hover:bg-orange-600 cursor-pointer"
+                    onMouseEnter={() => setIsHoveringButton(true)}
+                    onMouseLeave={() => setIsHoveringButton(false)}
+                    className="py-2 px-4 bg-valasys-orange text-white rounded text-sm font-bold hover:bg-orange-600 cursor-pointer transition-all"
+                    style={{
+                      border: isHoveringButton ? "2px dashed white" : "none",
+                    }}
                   >
                     {block.buttonText}
                   </button>
