@@ -109,6 +109,8 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-gray-100"
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               title="Move up"
               onClick={(e) => {
                 e.stopPropagation();
@@ -122,6 +124,8 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-gray-100"
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               title="Move down"
               onClick={(e) => {
                 e.stopPropagation();
@@ -135,6 +139,8 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-gray-100"
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               title="Duplicate block"
               onClick={(e) => {
                 e.stopPropagation();
@@ -147,6 +153,8 @@ export const LandingPagePreview: React.FC<LandingPagePreviewProps> = ({
               size="sm"
               variant="ghost"
               className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600"
+              onMouseDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               title="Delete block"
               onClick={(e) => {
                 e.stopPropagation();
