@@ -189,12 +189,7 @@ const SectionsPanel: React.FC<SectionsPanelProps> = ({ onAddBlock }) => {
         "Image at top, followed by title, description text, and call-to-action button",
       preview:
         "data:image/svg+xml,%3Csvg width='400' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='400' height='200' fill='%23f5f5f5'/%3E%3Crect y='0' width='400' height='80' fill='%23ddd'/%3E%3Ctext x='200' y='120' font-size='16' font-weight='bold' text-anchor='middle' fill='%23333'%3ESome title here%3C/text%3E%3Ctext x='200' y='140' font-size='12' text-anchor='middle' fill='%23666'%3ELorem ipsum dolor sit amet%3C/text%3E%3Crect x='150' y='155' width='100' height='30' fill='%23FF6A00' rx='4'/%3E%3Ctext x='200' y='175' font-size='12' text-anchor='middle' fill='white' font-weight='bold'%3ECall to action%3C/text%3E%3C/svg%3E",
-      blocks: () => [
-        createImageBlock(),
-        createTitleBlock(),
-        createTextBlock(),
-        createButtonBlock(),
-      ],
+      blocks: () => createTopImageSectionTemplate(),
     },
     {
       id: "left-image-section",
