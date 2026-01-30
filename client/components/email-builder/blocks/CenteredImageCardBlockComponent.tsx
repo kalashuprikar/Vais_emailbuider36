@@ -452,9 +452,6 @@ export const CenteredImageCardBlockComponent: React.FC<
                   {block.description}
                 </p>
               )}
-              {editMode === "description" && (
-                <SectionToolbar sectionType="description" />
-              )}
             </div>
           )}
 
@@ -485,9 +482,6 @@ export const CenteredImageCardBlockComponent: React.FC<
                     {block.buttonText}
                   </button>
                 </div>
-              )}
-              {editMode === "buttonText" && (
-                <SectionToolbar sectionType="buttonText" />
               )}
             </div>
           )}
