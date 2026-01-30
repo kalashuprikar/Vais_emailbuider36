@@ -138,12 +138,24 @@ export const CenteredImageCardBlockComponent: React.FC<
   }) => {
     const handleCopy = () => {
       let contentToCopy = "";
-      if (sectionType === "title") contentToCopy = block.title;
-      else if (sectionType === "description") contentToCopy = block.description;
-      else if (sectionType === "buttonText") contentToCopy = block.buttonText;
-      else if (sectionType === "image") contentToCopy = block.image;
+      let successMessage = "";
+
+      if (sectionType === "title") {
+        contentToCopy = block.title;
+        successMessage = "Title copied to clipboard!";
+      } else if (sectionType === "description") {
+        contentToCopy = block.description;
+        successMessage = "Description copied to clipboard!";
+      } else if (sectionType === "buttonText") {
+        contentToCopy = block.buttonText;
+        successMessage = "Button text copied to clipboard!";
+      } else if (sectionType === "image") {
+        contentToCopy = block.image;
+        successMessage = "Image URL copied to clipboard!";
+      }
 
       if (!contentToCopy) {
+        toast.error("Content is empty");
         return;
       }
 
@@ -158,8 +170,9 @@ export const CenteredImageCardBlockComponent: React.FC<
         textArea.select();
         document.execCommand("copy");
         document.body.removeChild(textArea);
+        toast.success(successMessage);
       } catch (err) {
-        // Silently fail if copy doesn't work
+        toast.error("Failed to copy");
         console.error("Copy failed:", err);
       }
     };
