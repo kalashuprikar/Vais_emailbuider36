@@ -914,12 +914,17 @@ export function renderBlockToHTML(block: ContentBlock): string {
             if (card.image) {
               const imageTag = `<img src="${card.image}" alt="${card.imageAlt || ""}" style="width: 100%; height: auto; display: block; border-radius: ${card.borderRadius}px; object-fit: cover; border: none; cursor: pointer;" />`;
               if (card.imageLink) {
-                const href =
-                  card.imageLinkType === "email"
-                    ? `mailto:${card.imageLink}`
-                    : card.imageLink;
+                let href = card.imageLink;
+                if (card.imageLinkType === "email") {
+                  href = `mailto:${card.imageLink}`;
+                } else {
+                  if (!href.startsWith("http")) {
+                    href = `https://${href}`;
+                  }
+                }
+                const target = card.imageLinkType === "email" ? "" : ` target="_blank" rel="noopener noreferrer"`;
                 imageHtml = `<div style="padding: 12px;">
-                  <a href="${href}" style="text-decoration: none; display: block;">
+                  <a href="${href}"${target} style="text-decoration: none; display: block; width: 100%;">
                     ${imageTag}
                   </a>
                 </div>`;
