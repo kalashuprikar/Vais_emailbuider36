@@ -123,38 +123,38 @@ export const TextBlockComponent: React.FC<TextBlockComponentProps> = ({
           {block.content}
         </p>
       )}
-      {isSelected && !isEditing && (
-        <div className="absolute top-1 right-1 flex gap-1 items-center">
-          <div
+      {(isHovering || isSelected) && !isEditing && (
+        <div className="absolute top-1 right-1 flex gap-1 items-center bg-white border border-gray-300 rounded-lg p-1 shadow-md z-20">
+          <button
             onClick={handleEditIconClick}
-            className="bg-valasys-orange text-white p-1 rounded cursor-pointer hover:bg-valasys-orange/90 transition-colors"
+            className="text-valasys-orange hover:text-valasys-orange/90 transition-colors p-1"
             title="Edit text"
           >
             <Edit2 className="w-3 h-3" />
-          </div>
+          </button>
           {onDuplicate && (
-            <div
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDuplicate(block, blockIndex + 1);
               }}
-              className="bg-blue-600 text-white p-1 rounded cursor-pointer hover:bg-blue-700 transition-colors"
+              className="text-gray-700 hover:text-blue-600 transition-colors p-1"
               title="Copy block"
             >
               <Copy className="w-3 h-3" />
-            </div>
+            </button>
           )}
           {onDelete && (
-            <div
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(block.id);
               }}
-              className="bg-red-600 text-white p-1 rounded cursor-pointer hover:bg-red-700 transition-colors"
+              className="text-gray-700 hover:text-red-600 transition-colors p-1"
               title="Delete block"
             >
               <Trash2 className="w-3 h-3" />
-            </div>
+            </button>
           )}
         </div>
       )}
