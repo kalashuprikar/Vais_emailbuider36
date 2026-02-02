@@ -225,7 +225,7 @@ export const TwoColumnCardBlockComponent: React.FC<
             >
               {card.image ? (
                 <>
-                  <div style={{ padding: "12px", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ padding: "12px" }}>
                     <img
                       src={card.image}
                       alt={card.imageAlt || "Card image"}
@@ -236,7 +236,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                         if (parent) {
                           const errorDiv = document.createElement("div");
                           errorDiv.className =
-                            "w-full h-40 bg-gray-200 flex items-center justify-center text-center p-4";
+                            "w-full bg-gray-200 flex items-center justify-center text-center p-4";
                           errorDiv.innerHTML =
                             '<p style="font-size: 12px; color: #666;">Image failed to load. Check the URL or upload the image directly.</p>';
                           parent.appendChild(errorDiv);
@@ -244,7 +244,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                       }}
                       style={{
                         width: "100%",
-                        height: "100%",
+                        height: "auto",
                         maxWidth: "100%",
                         display: "block",
                         objectFit: "cover",
@@ -254,7 +254,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                   </div>
                 </>
               ) : (
-                <label className="flex items-center justify-center w-full h-full bg-gray-800 cursor-pointer hover:bg-gray-700 transition-colors rounded">
+                <label className="flex items-center justify-center w-full bg-gray-800 cursor-pointer hover:bg-gray-700 transition-colors rounded p-8">
                   <div className="flex flex-col items-center justify-center">
                     <Upload className="w-6 h-6 text-gray-400 mb-2" />
                     <p className="text-sm text-gray-400">Click to upload</p>
