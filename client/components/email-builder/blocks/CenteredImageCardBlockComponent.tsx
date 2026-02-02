@@ -560,18 +560,48 @@ export const CenteredImageCardBlockComponent: React.FC<
                       }
                       onMouseLeave={() => setHoveredSection(null)}
                     >
-                      <h3
-                        onClick={() => setEditMode(`title-${title.id}`)}
-                        className="font-bold text-xl text-gray-900 cursor-pointer transition-all p-3 rounded"
-                        style={{
-                          border:
-                            hoveredSection === `title-${title.id}`
-                              ? "2px dotted rgb(255, 106, 0)"
-                              : "none",
-                        }}
-                      >
-                        {title.content}
-                      </h3>
+                      <div className="flex items-center justify-between gap-2 group">
+                        <h3
+                          onClick={() => setEditMode(`title-${title.id}`)}
+                          className="flex-1 font-bold text-xl text-gray-900 cursor-pointer transition-all p-3 rounded"
+                          style={{
+                            border:
+                              hoveredSection === `title-${title.id}`
+                                ? "2px dotted rgb(255, 106, 0)"
+                                : "none",
+                          }}
+                        >
+                          {title.content}
+                        </h3>
+                        {hoveredSection === `title-${title.id}` && (
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 hover:bg-gray-100"
+                              title="Copy"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDuplicateTitle(title.id);
+                              }}
+                            >
+                              <Copy className="w-4 h-4 text-gray-700" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 hover:bg-red-100"
+                              title="Delete"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTitle(title.id);
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4 text-red-600" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
