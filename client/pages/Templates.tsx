@@ -177,7 +177,7 @@ export default function Templates() {
                         Subject: {template.subject}
                       </div>
                     </CardHeader>
-                    <CardContent className="flex flex-col py-0 px-6 pb-4">
+                    <CardContent className="pt-0 pb-4">
                       <div className="mb-2">
                         <Badge variant="outline" className="bg-blue-50 text-xs">
                           {template.blocks.length} blocks
