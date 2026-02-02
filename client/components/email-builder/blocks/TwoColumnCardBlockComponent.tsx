@@ -22,6 +22,8 @@ export const TwoColumnCardBlockComponent: React.FC<
   const [startHeight, setStartHeight] = useState(0);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState("");
+  const [hoveredField, setHoveredField] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleImageUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
