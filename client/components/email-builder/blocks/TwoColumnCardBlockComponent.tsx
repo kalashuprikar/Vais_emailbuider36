@@ -126,8 +126,33 @@ export const TwoColumnCardBlockComponent: React.FC<
           "text/plain": new Blob([text], { type: "text/plain" }),
         }),
       ])
-      .catch(() => {
-        navigator.clipboard.writeText(text);
+      .then(() => {
+        toast({
+          title: "Copied!",
+          description: "Title copied to clipboard",
+          duration: 2000,
+        });
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+        // Fallback to text-only copy
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            toast({
+              title: "Copied!",
+              description: "Title copied to clipboard",
+              duration: 2000,
+            });
+          })
+          .catch(() => {
+            toast({
+              title: "Copy Failed",
+              description: "Could not copy to clipboard",
+              variant: "destructive",
+              duration: 2000,
+            });
+          });
       });
   };
 
@@ -140,8 +165,33 @@ export const TwoColumnCardBlockComponent: React.FC<
           "text/plain": new Blob([text], { type: "text/plain" }),
         }),
       ])
-      .catch(() => {
-        navigator.clipboard.writeText(text);
+      .then(() => {
+        toast({
+          title: "Copied!",
+          description: "Description copied to clipboard",
+          duration: 2000,
+        });
+      })
+      .catch((err) => {
+        console.error("Copy failed:", err);
+        // Fallback to text-only copy
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            toast({
+              title: "Copied!",
+              description: "Description copied to clipboard",
+              duration: 2000,
+            });
+          })
+          .catch(() => {
+            toast({
+              title: "Copy Failed",
+              description: "Could not copy to clipboard",
+              variant: "destructive",
+              duration: 2000,
+            });
+          });
       });
   };
 
