@@ -396,8 +396,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                       backgroundColor: "transparent",
                     }}
                   />
-                  <AddCardButton cardId={card.id} />
-                  <FieldActions
+                  <FieldToolbar
                     cardId={card.id}
                     fieldName="title"
                     fieldValue={editingValue}
@@ -429,15 +428,12 @@ export const TwoColumnCardBlockComponent: React.FC<
                     {card.title}
                   </h3>
                   {focusedField === `${card.id}-title` && (
-                    <>
-                      <AddCardButton cardId={card.id} />
-                      <FieldActions
-                        cardId={card.id}
-                        fieldName="title"
-                        fieldValue={card.title}
-                        onDelete={handleDeleteField}
-                      />
-                    </>
+                    <FieldToolbar
+                      cardId={card.id}
+                      fieldName="title"
+                      fieldValue={card.title}
+                      onDelete={handleDeleteField}
+                    />
                   )}
                 </div>
               )}
