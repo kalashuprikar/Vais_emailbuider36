@@ -15,7 +15,6 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Copy, Download } from "lucide-react";
-import { toast } from "sonner";
 
 interface SourceCodeViewProps {
   template: EmailTemplate;
@@ -73,7 +72,6 @@ export const SourceCodeView: React.FC<SourceCodeViewProps> = ({ template }) => {
         }, 2000);
       } catch (err) {
         console.error("Copy failed:", err);
-        toast.error("Failed to copy to clipboard");
       } finally {
         document.body.removeChild(textArea);
       }

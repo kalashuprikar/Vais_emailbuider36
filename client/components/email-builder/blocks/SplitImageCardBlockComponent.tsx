@@ -3,7 +3,6 @@ import { SplitImageCardBlock } from "../types";
 import { Upload, Copy, Trash2, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 
 interface SplitImageCardBlockComponentProps {
   block: SplitImageCardBlock;
@@ -195,21 +194,7 @@ export const SplitImageCardBlockComponent: React.FC<
   ]);
 
   const handleCopyText = async (text: string) => {
-    const success = await copyToClipboard(text);
-    if (success) {
-      toast({
-        title: "Copied!",
-        description: "Text copied to clipboard",
-        duration: 2000,
-      });
-    } else {
-      toast({
-        title: "Copy Failed",
-        description: "Could not copy to clipboard",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
+    await copyToClipboard(text);
   };
 
   const handleClearTitle = (id: string) => {
@@ -280,21 +265,7 @@ export const SplitImageCardBlockComponent: React.FC<
       onBlockUpdate({ ...block, titles: newTitles });
 
       // Copy to clipboard
-      const success = await copyToClipboard(titleToDuplicate.content);
-      if (success) {
-        toast({
-          title: "Copied!",
-          description: "Title copied to clipboard",
-          duration: 2000,
-        });
-      } else {
-        toast({
-          title: "Copy Failed",
-          description: "Could not copy to clipboard",
-          variant: "destructive",
-          duration: 2000,
-        });
-      }
+      await copyToClipboard(titleToDuplicate.content);
     }
   };
 
@@ -310,21 +281,7 @@ export const SplitImageCardBlockComponent: React.FC<
       onBlockUpdate({ ...block, descriptions: newDescriptions });
 
       // Copy to clipboard
-      const success = await copyToClipboard(descToDuplicate.content);
-      if (success) {
-        toast({
-          title: "Copied!",
-          description: "Description copied to clipboard",
-          duration: 2000,
-        });
-      } else {
-        toast({
-          title: "Copy Failed",
-          description: "Could not copy to clipboard",
-          variant: "destructive",
-          duration: 2000,
-        });
-      }
+      await copyToClipboard(descToDuplicate.content);
     }
   };
 
@@ -341,21 +298,7 @@ export const SplitImageCardBlockComponent: React.FC<
 
       // Copy to clipboard
       const buttonText = `${buttonToDuplicate.text} (${buttonToDuplicate.link})`;
-      const success = await copyToClipboard(buttonText);
-      if (success) {
-        toast({
-          title: "Copied!",
-          description: "Button copied to clipboard",
-          duration: 2000,
-        });
-      } else {
-        toast({
-          title: "Copy Failed",
-          description: "Could not copy to clipboard",
-          variant: "destructive",
-          duration: 2000,
-        });
-      }
+      await copyToClipboard(buttonText);
     }
   };
 

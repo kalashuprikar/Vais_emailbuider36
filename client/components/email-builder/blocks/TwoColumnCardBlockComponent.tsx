@@ -1,41 +1,54 @@
 import React, { useState, useRef, useEffect } from "react";
-import React, { useState, useEffect } from "react";
 import { TwoColumnCardBlock } from "../types";
 import { Upload, Trash2, Plus, Copy } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
 
 // Helper function to copy text to clipboard with fallbacks
 const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
-    // Modern Clipboard API
-    if (navigator.clipboard && window.isSecureContext) {
+    // Try modern Clipboard API first
+    if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
       return true;
+    }
+  } catch (err) {
+    console.warn("Clipboard API failed, trying fallback:", err);
+  }
+
+  // Fallback: use textarea method
+  try {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+
+    // For iOS compatibility
+    if (navigator.userAgent.match(/ipad|iphone/i)) {
+      const range = document.createRange();
+      range.selectNodeContents(textArea);
+      const selection = window.getSelection();
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+      textArea.setSelectionRange(0, 999999);
     } else {
-      // Fallback: use textarea method for older browsers or non-secure contexts
-      const textArea = document.createElement("textarea");
-      textArea.value = text;
-      textArea.style.position = "fixed";
-      textArea.style.left = "-999999px";
-      textArea.style.top = "-999999px";
-      document.body.appendChild(textArea);
-      textArea.focus();
       textArea.select();
+    }
 
-      const success = document.execCommand("copy");
-      document.body.removeChild(textArea);
+    const success = document.execCommand("copy");
+    document.body.removeChild(textArea);
 
-      if (!success) {
-        throw new Error("execCommand copy failed");
-      }
+    if (success) {
       return true;
     }
-  } catch (error) {
-    console.error("Clipboard copy failed:", error);
-    return false;
+  } catch (err) {
+    console.error("Fallback clipboard copy failed:", err);
   }
+
+  return false;
 };
 
 interface TwoColumnCardBlockComponentProps {
@@ -151,39 +164,11 @@ export const TwoColumnCardBlockComponent: React.FC<
   };
 
   const handleCopyStyledTitle = async (text: string) => {
-    const success = await copyToClipboard(text);
-    if (success) {
-      toast({
-        title: "Copied!",
-        description: "Title copied to clipboard",
-        duration: 2000,
-      });
-    } else {
-      toast({
-        title: "Copy Failed",
-        description: "Could not copy to clipboard",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
+    await copyToClipboard(text);
   };
 
   const handleCopyStyledDescription = async (text: string) => {
-    const success = await copyToClipboard(text);
-    if (success) {
-      toast({
-        title: "Copied!",
-        description: "Description copied to clipboard",
-        duration: 2000,
-      });
-    } else {
-      toast({
-        title: "Copy Failed",
-        description: "Could not copy to clipboard",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
+    await copyToClipboard(text);
   };
 
   const handleDeleteCard = (cardId: string) => {
@@ -490,7 +475,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                           ? "2px solid rgb(255, 106, 0)"
                           : hoveredField === `${card.id}-title`
                             ? "2px dotted rgb(255, 106, 0)"
-                            : "2px solid transparent",
+                            : "none",
                     }}
                     onClick={() => setFocusedField(`${card.id}-title`)}
                     onDoubleClick={() =>
@@ -561,7 +546,7 @@ export const TwoColumnCardBlockComponent: React.FC<
                           ? "2px solid rgb(255, 106, 0)"
                           : hoveredField === `${card.id}-description`
                             ? "2px dotted rgb(255, 106, 0)"
-                            : "2px solid transparent",
+                            : "none",
                     }}
                     onClick={() => setFocusedField(`${card.id}-description`)}
                     onDoubleClick={() =>
