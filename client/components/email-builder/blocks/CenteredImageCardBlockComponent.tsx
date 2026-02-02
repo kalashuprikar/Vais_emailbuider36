@@ -762,13 +762,18 @@ export const CenteredImageCardBlockComponent: React.FC<
                       <div className="flex justify-center items-center gap-2 group">
                         <div>
                           <button
-                            onClick={() => setEditMode(`button-text-${btn.id}`)}
+                            onClick={() => {
+                              setEditMode(`button-text-${btn.id}`);
+                              setFocusedSection(`button-${btn.id}`);
+                            }}
                             className="inline-block py-2 px-6 bg-valasys-orange text-white rounded text-sm font-bold hover:bg-orange-600 cursor-pointer transition-all"
                             style={{
                               border:
-                                hoveredSection === `button-${btn.id}`
+                                focusedSection === `button-${btn.id}`
                                   ? "2px solid white"
-                                  : "2px dotted white",
+                                  : hoveredSection === `button-${btn.id}`
+                                    ? "2px dotted white"
+                                    : "2px dotted white",
                             }}
                           >
                             {btn.text}
