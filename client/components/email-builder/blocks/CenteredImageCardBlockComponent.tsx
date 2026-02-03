@@ -16,6 +16,38 @@ interface CenteredImageCardBlockComponentProps {
 const generateId = () =>
   `section-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+// Helper function to copy text to clipboard with fallbacks
+const copyToClipboard = async (text: string): Promise<boolean> => {
+  try {
+    // Modern Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } else {
+      // Fallback: use textarea method for older browsers or non-secure contexts
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const success = document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (!success) {
+        throw new Error("execCommand copy failed");
+      }
+      return true;
+    }
+  } catch (error) {
+    console.error("Clipboard copy failed:", error);
+    return false;
+  }
+};
+
 export const CenteredImageCardBlockComponent: React.FC<
   CenteredImageCardBlockComponentProps
 > = ({ block, isSelected, onBlockUpdate, blockIndex = 0 }) => {
@@ -28,6 +60,7 @@ export const CenteredImageCardBlockComponent: React.FC<
   const [startHeight, setStartHeight] = useState(0);
   const [isHoveringImage, setIsHoveringImage] = useState(false);
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const [focusedSection, setFocusedSection] = useState<string | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Initialize sections from old format or arrays
@@ -154,6 +187,10 @@ export const CenteredImageCardBlockComponent: React.FC<
     onBlockUpdate,
   ]);
 
+  const handleCopyText = async (text: string) => {
+    await copyToClipboard(text);
+  };
+
   const handleAddTitle = () => {
     const newTitles = [...titles, { id: generateId(), content: "" }];
     onBlockUpdate({ ...block, titles: newTitles });
@@ -196,7 +233,7 @@ export const CenteredImageCardBlockComponent: React.FC<
     onBlockUpdate({ ...block, buttons: newButtons });
   };
 
-  const handleDuplicateTitle = (id: string) => {
+  const handleDuplicateTitle = async (id: string) => {
     const titleToDuplicate = titles.find((t) => t.id === id);
     if (titleToDuplicate) {
       const newTitles = [...titles];
@@ -207,24 +244,12 @@ export const CenteredImageCardBlockComponent: React.FC<
       });
       onBlockUpdate({ ...block, titles: newTitles });
 
-      // Copy to clipboard with styling
-      const styledContent = `<h2 style="font-weight: bold; font-size: 20px; color: rgb(17, 24, 39); text-align: center;">${titleToDuplicate.content}</h2>`;
-      navigator.clipboard
-        .write([
-          new ClipboardItem({
-            "text/html": new Blob([styledContent], { type: "text/html" }),
-            "text/plain": new Blob([titleToDuplicate.content], {
-              type: "text/plain",
-            }),
-          }),
-        ])
-        .catch(() => {
-          navigator.clipboard.writeText(titleToDuplicate.content);
-        });
+      // Copy to clipboard
+      await copyToClipboard(titleToDuplicate.content);
     }
   };
 
-  const handleDuplicateDescription = (id: string) => {
+  const handleDuplicateDescription = async (id: string) => {
     const descToDuplicate = descriptions.find((d) => d.id === id);
     if (descToDuplicate) {
       const newDescriptions = [...descriptions];
@@ -235,24 +260,12 @@ export const CenteredImageCardBlockComponent: React.FC<
       });
       onBlockUpdate({ ...block, descriptions: newDescriptions });
 
-      // Copy to clipboard with styling
-      const styledContent = `<p style="font-size: 14px; color: rgb(75, 85, 99); text-align: center; white-space: pre-wrap;">${descToDuplicate.content}</p>`;
-      navigator.clipboard
-        .write([
-          new ClipboardItem({
-            "text/html": new Blob([styledContent], { type: "text/html" }),
-            "text/plain": new Blob([descToDuplicate.content], {
-              type: "text/plain",
-            }),
-          }),
-        ])
-        .catch(() => {
-          navigator.clipboard.writeText(descToDuplicate.content);
-        });
+      // Copy to clipboard
+      await copyToClipboard(descToDuplicate.content);
     }
   };
 
-  const handleDuplicateButton = (id: string) => {
+  const handleDuplicateButton = async (id: string) => {
     const buttonToDuplicate = buttons.find((b) => b.id === id);
     if (buttonToDuplicate) {
       const newButtons = [...buttons];
@@ -263,42 +276,45 @@ export const CenteredImageCardBlockComponent: React.FC<
       });
       onBlockUpdate({ ...block, buttons: newButtons });
 
-      // Copy to clipboard with styling
-      const styledContent = `<a href="${buttonToDuplicate.link}" style="display: inline-block; padding: 8px 16px; background-color: rgb(255, 106, 35); color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">${buttonToDuplicate.text}</a>`;
-      navigator.clipboard
-        .write([
-          new ClipboardItem({
-            "text/html": new Blob([styledContent], { type: "text/html" }),
-            "text/plain": new Blob(
-              [`${buttonToDuplicate.text} (${buttonToDuplicate.link})`],
-              { type: "text/plain" },
-            ),
-          }),
-        ])
-        .catch(() => {
-          navigator.clipboard.writeText(
-            `${buttonToDuplicate.text} (${buttonToDuplicate.link})`,
-          );
-        });
+      // Copy to clipboard
+      const buttonText = `${buttonToDuplicate.text} (${buttonToDuplicate.link})`;
+      await copyToClipboard(buttonText);
     }
+  };
+
+  const handleClearTitle = (id: string) => {
+    const newTitles = titles.map((t) =>
+      t.id === id ? { ...t, content: "" } : t,
+    );
+    onBlockUpdate({ ...block, titles: newTitles });
+  };
+
+  const handleClearDescription = (id: string) => {
+    const newDescriptions = descriptions.map((d) =>
+      d.id === id ? { ...d, content: "" } : d,
+    );
+    onBlockUpdate({ ...block, descriptions: newDescriptions });
   };
 
   const handleDeleteTitle = (id: string) => {
     const newTitles = titles.filter((t) => t.id !== id);
     onBlockUpdate({ ...block, titles: newTitles });
     setEditMode(null);
+    setFocusedSection(null);
   };
 
   const handleDeleteDescription = (id: string) => {
     const newDescriptions = descriptions.filter((d) => d.id !== id);
     onBlockUpdate({ ...block, descriptions: newDescriptions });
     setEditMode(null);
+    setFocusedSection(null);
   };
 
   const handleDeleteButton = (id: string) => {
     const newButtons = buttons.filter((b) => b.id !== id);
     onBlockUpdate({ ...block, buttons: newButtons });
     setEditMode(null);
+    setFocusedSection(null);
   };
 
   const SectionToolbar = ({
@@ -312,7 +328,7 @@ export const CenteredImageCardBlockComponent: React.FC<
   }) => {
     return (
       <div
-        className="flex items-center justify-center gap-1 bg-white border border-gray-200 rounded-lg p-2 shadow-sm mt-2"
+        className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-2 shadow-sm mt-2 w-fit"
         onMouseDown={(e) => e.preventDefault()}
       >
         {onAdd && (
@@ -359,6 +375,63 @@ export const CenteredImageCardBlockComponent: React.FC<
     );
   };
 
+  const FieldToolbar = ({
+    fieldId,
+    fieldValue,
+    onAddTitle,
+    onCopy,
+    onClear,
+  }: {
+    fieldId: string;
+    fieldValue: string;
+    onAddTitle: () => void;
+    onCopy: (value: string) => void;
+    onClear: (id: string) => void;
+  }) => {
+    return (
+      <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-lg p-2 shadow-sm mt-2 w-fit">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-gray-100"
+          title="Add"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddTitle();
+          }}
+        >
+          <Plus className="w-3 h-3 text-gray-700" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-gray-100"
+          title="Copy"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCopy(fieldValue);
+          }}
+        >
+          <Copy className="w-3 h-3 text-gray-700" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 w-7 p-0 hover:bg-red-100"
+          title="Delete"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear(fieldId);
+          }}
+        >
+          <Trash2 className="w-3 h-3 text-red-600" />
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div
       className="rounded-lg group transition-all"
@@ -395,17 +468,38 @@ export const CenteredImageCardBlockComponent: React.FC<
                 src={block.image}
                 alt={block.imageAlt}
                 onClick={() => setEditMode("image")}
-                className="w-full rounded-lg cursor-pointer"
+                className="rounded-lg cursor-pointer"
                 crossOrigin="anonymous"
                 style={{
-                  width: "100%",
-                  height: "auto",
+                  width: block.width ? `${block.width}px` : "auto",
+                  height: block.height ? `${block.height}px` : "auto",
                   display: "block",
                   maxWidth: "100%",
+                  objectFit: "cover",
                 }}
                 onError={(e) => {
-                  console.error("Image failed to load:", block.image);
-                  (e.target as HTMLImageElement).style.border = "2px solid red";
+                  const imgElement = e.target as HTMLImageElement;
+                  const currentSrc = imgElement.src;
+
+                  // Retry with CORS proxy if not already attempted
+                  if (
+                    !currentSrc.includes("cors-anywhere") &&
+                    !currentSrc.includes("corsproxy")
+                  ) {
+                    console.warn(
+                      "⚠️ Image blocked by CORS. Retrying with proxy...",
+                      block.image,
+                    );
+                    imgElement.src = `https://cors-anywhere.herokuapp.com/${block.image}`;
+                    imgElement.onerror = () => {
+                      console.error(
+                        "Image failed to load even with CORS proxy:",
+                        block.image,
+                      );
+                      imgElement.style.border = "2px solid red";
+                      imgElement.style.opacity = "0.5";
+                    };
+                  }
                 }}
               />
 
@@ -507,187 +601,241 @@ export const CenteredImageCardBlockComponent: React.FC<
           )}
         </div>
 
-        <div className="space-y-4 text-center">
+        <div className="space-y-4 text-center pt-4">
           {/* Titles Section */}
-          {titles.length > 0 && (
+          {titles.filter((t) => t.content).length > 0 && (
             <div className="space-y-2">
-              {titles.map((title) => (
-                <div key={title.id}>
-                  {editMode === `title-${title.id}` ? (
-                    <>
-                      <Input
-                        value={title.content}
-                        onChange={(e) =>
-                          handleUpdateTitle(title.id, e.target.value)
+              {titles
+                .filter((t) => t.content)
+                .map((title) => (
+                  <div key={title.id}>
+                    {editMode === `title-${title.id}` ? (
+                      <>
+                        <Input
+                          value={title.content}
+                          onChange={(e) =>
+                            handleUpdateTitle(title.id, e.target.value)
+                          }
+                          onBlur={() =>
+                            setTimeout(() => setEditMode(null), 200)
+                          }
+                          onMouseDown={(e) => e.stopPropagation()}
+                          autoFocus
+                          className="text-center font-bold text-lg focus:outline-none"
+                          style={{ border: "2px solid rgb(255, 106, 0)" }}
+                        />
+                        <SectionToolbar
+                          onAdd={handleAddTitle}
+                          onCopy={() => handleDuplicateTitle(title.id)}
+                          onDelete={() => handleDeleteTitle(title.id)}
+                        />
+                      </>
+                    ) : (
+                      <div
+                        onMouseEnter={() =>
+                          setHoveredSection(`title-${title.id}`)
                         }
-                        onBlur={() => setTimeout(() => setEditMode(null), 200)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        autoFocus
-                        className="text-center font-bold text-lg focus:outline-none"
-                        style={{ border: "2px solid rgb(255, 106, 0)" }}
-                      />
-                      <SectionToolbar
-                        onAdd={handleAddTitle}
-                        onCopy={() => handleDuplicateTitle(title.id)}
-                        onDelete={() => handleDeleteTitle(title.id)}
-                      />
-                    </>
-                  ) : (
-                    <div
-                      onMouseEnter={() =>
-                        setHoveredSection(`title-${title.id}`)
-                      }
-                      onMouseLeave={() => setHoveredSection(null)}
-                    >
-                      <h3
-                        onClick={() => setEditMode(`title-${title.id}`)}
-                        className="font-bold text-xl text-gray-900 cursor-pointer transition-all p-3 rounded"
-                        style={{
-                          border:
-                            hoveredSection === `title-${title.id}`
-                              ? "1px dashed rgb(255, 106, 0)"
-                              : "none",
-                        }}
+                        onMouseLeave={() => setHoveredSection(null)}
                       >
-                        {title.content}
-                      </h3>
-                    </div>
-                  )}
-                </div>
-              ))}
+                        <h3
+                          onClick={() => {
+                            setEditMode(`title-${title.id}`);
+                            setFocusedSection(`title-${title.id}`);
+                          }}
+                          className="flex-1 font-bold text-xl text-gray-900 cursor-pointer transition-all p-3 rounded"
+                          style={{
+                            border:
+                              focusedSection === `title-${title.id}`
+                                ? "2px solid rgb(255, 106, 0)"
+                                : hoveredSection === `title-${title.id}`
+                                  ? "2px dotted rgb(255, 106, 0)"
+                                  : "none",
+                          }}
+                        >
+                          {title.content}
+                        </h3>
+                        {focusedSection === `title-${title.id}` && (
+                          <FieldToolbar
+                            fieldId={title.id}
+                            fieldValue={title.content}
+                            onAddTitle={handleAddTitle}
+                            onCopy={handleCopyText}
+                            onClear={handleClearTitle}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           )}
 
           {/* Descriptions Section */}
-          {descriptions.length > 0 && (
+          {descriptions.filter((d) => d.content).length > 0 && (
             <div className="space-y-2">
-              {descriptions.map((desc) => (
-                <div key={desc.id}>
-                  {editMode === `description-${desc.id}` ? (
-                    <>
-                      <textarea
-                        value={desc.content}
-                        onChange={(e) =>
-                          handleUpdateDescription(desc.id, e.target.value)
+              {descriptions
+                .filter((d) => d.content)
+                .map((desc) => (
+                  <div key={desc.id}>
+                    {editMode === `description-${desc.id}` ? (
+                      <>
+                        <textarea
+                          value={desc.content}
+                          onChange={(e) =>
+                            handleUpdateDescription(desc.id, e.target.value)
+                          }
+                          onBlur={() =>
+                            setTimeout(() => setEditMode(null), 200)
+                          }
+                          onMouseDown={(e) => e.stopPropagation()}
+                          autoFocus
+                          className="w-full resize-none"
+                          style={{
+                            padding: "1rem",
+                            borderRadius: "0.5rem",
+                            fontSize: "0.875rem",
+                            color: "rgb(55, 65, 81)",
+                            minHeight: "7rem",
+                            border: "2px solid rgb(255, 106, 0)",
+                            boxSizing: "border-box",
+                            outline: "none",
+                            backgroundColor: "white",
+                          }}
+                        />
+                        <SectionToolbar
+                          onAdd={handleAddDescription}
+                          onCopy={() => handleDuplicateDescription(desc.id)}
+                          onDelete={() => handleDeleteDescription(desc.id)}
+                        />
+                      </>
+                    ) : (
+                      <div
+                        onMouseEnter={() =>
+                          setHoveredSection(`description-${desc.id}`)
                         }
-                        onBlur={() => setTimeout(() => setEditMode(null), 200)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        autoFocus
-                        className="w-full resize-none"
-                        style={{
-                          padding: "1rem",
-                          borderRadius: "0.5rem",
-                          fontSize: "0.875rem",
-                          color: "rgb(55, 65, 81)",
-                          minHeight: "7rem",
-                          border: "2px solid rgb(255, 106, 0)",
-                          boxSizing: "border-box",
-                          outline: "none",
-                          backgroundColor: "white",
-                        }}
-                      />
-                      <SectionToolbar
-                        onAdd={handleAddDescription}
-                        onCopy={() => handleDuplicateDescription(desc.id)}
-                        onDelete={() => handleDeleteDescription(desc.id)}
-                      />
-                    </>
-                  ) : (
-                    <div
-                      onMouseEnter={() =>
-                        setHoveredSection(`description-${desc.id}`)
-                      }
-                      onMouseLeave={() => setHoveredSection(null)}
-                    >
-                      <p
-                        onClick={() => setEditMode(`description-${desc.id}`)}
-                        className="text-sm text-gray-600 cursor-pointer transition-all p-3 rounded whitespace-pre-wrap break-words"
-                        style={{
-                          border:
-                            hoveredSection === `description-${desc.id}`
-                              ? "1px dashed rgb(255, 106, 0)"
-                              : "none",
-                        }}
+                        onMouseLeave={() => setHoveredSection(null)}
                       >
-                        {desc.content}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
+                        <p
+                          onClick={() => {
+                            setEditMode(`description-${desc.id}`);
+                            setFocusedSection(`description-${desc.id}`);
+                          }}
+                          className="flex-1 text-sm text-gray-600 cursor-pointer transition-all p-3 rounded whitespace-pre-wrap break-words"
+                          style={{
+                            border:
+                              focusedSection === `description-${desc.id}`
+                                ? "2px solid rgb(255, 106, 0)"
+                                : hoveredSection === `description-${desc.id}`
+                                  ? "2px dotted rgb(255, 106, 0)"
+                                  : "none",
+                          }}
+                        >
+                          {desc.content}
+                        </p>
+                        {focusedSection === `description-${desc.id}` && (
+                          <FieldToolbar
+                            fieldId={desc.id}
+                            fieldValue={desc.content}
+                            onAddTitle={handleAddDescription}
+                            onCopy={handleCopyText}
+                            onClear={handleClearDescription}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           )}
 
           {/* Buttons Section */}
-          {buttons.length > 0 && (
+          {buttons.filter((b) => b.text).length > 0 && (
             <div className="space-y-2 pt-2">
-              {buttons.map((btn) => (
-                <div key={btn.id}>
-                  {editMode === `button-text-${btn.id}` ? (
-                    <>
-                      <Input
-                        value={btn.text}
-                        onChange={(e) =>
-                          handleUpdateButton(btn.id, e.target.value, btn.link)
+              {buttons
+                .filter((b) => b.text)
+                .map((btn) => (
+                  <div key={btn.id}>
+                    {editMode === `button-text-${btn.id}` ? (
+                      <>
+                        <Input
+                          value={btn.text}
+                          onChange={(e) =>
+                            handleUpdateButton(btn.id, e.target.value, btn.link)
+                          }
+                          onBlur={() =>
+                            setTimeout(() => setEditMode(null), 200)
+                          }
+                          onMouseDown={(e) => e.stopPropagation()}
+                          autoFocus
+                          className="text-center focus:outline-none"
+                          style={{ border: "2px solid rgb(255, 106, 0)" }}
+                        />
+                        <SectionToolbar
+                          onAdd={handleAddButton}
+                          onCopy={() => handleDuplicateButton(btn.id)}
+                          onDelete={() => handleDeleteButton(btn.id)}
+                        />
+                      </>
+                    ) : editMode === `button-link-${btn.id}` ? (
+                      <>
+                        <Input
+                          value={btn.link}
+                          onChange={(e) =>
+                            handleUpdateButton(btn.id, btn.text, e.target.value)
+                          }
+                          onBlur={() =>
+                            setTimeout(() => setEditMode(null), 200)
+                          }
+                          onMouseDown={(e) => e.stopPropagation()}
+                          autoFocus
+                          placeholder="https://example.com"
+                          className="text-sm text-center focus:outline-none"
+                          style={{ border: "2px solid rgb(255, 106, 0)" }}
+                        />
+                        <SectionToolbar
+                          onAdd={handleAddButton}
+                          onCopy={() => handleDuplicateButton(btn.id)}
+                          onDelete={() => handleDeleteButton(btn.id)}
+                        />
+                      </>
+                    ) : (
+                      <div
+                        onMouseEnter={() =>
+                          setHoveredSection(`button-${btn.id}`)
                         }
-                        onBlur={() => setTimeout(() => setEditMode(null), 200)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        autoFocus
-                        className="text-center focus:outline-none"
-                        style={{ border: "2px solid rgb(255, 106, 0)" }}
-                      />
-                      <SectionToolbar
-                        onAdd={handleAddButton}
-                        onCopy={() => handleDuplicateButton(btn.id)}
-                        onDelete={() => handleDeleteButton(btn.id)}
-                      />
-                    </>
-                  ) : editMode === `button-link-${btn.id}` ? (
-                    <>
-                      <Input
-                        value={btn.link}
-                        onChange={(e) =>
-                          handleUpdateButton(btn.id, btn.text, e.target.value)
-                        }
-                        onBlur={() => setTimeout(() => setEditMode(null), 200)}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        autoFocus
-                        placeholder="https://example.com"
-                        className="text-sm text-center focus:outline-none"
-                        style={{ border: "2px solid rgb(255, 106, 0)" }}
-                      />
-                      <SectionToolbar
-                        onAdd={handleAddButton}
-                        onCopy={() => handleDuplicateButton(btn.id)}
-                        onDelete={() => handleDeleteButton(btn.id)}
-                      />
-                    </>
-                  ) : (
-                    <div
-                      onMouseEnter={() => setHoveredSection(`button-${btn.id}`)}
-                      onMouseLeave={() => setHoveredSection(null)}
-                    >
-                      <div className="flex justify-center">
+                        onMouseLeave={() => setHoveredSection(null)}
+                      >
                         <button
-                          onClick={() => setEditMode(`button-text-${btn.id}`)}
+                          onClick={() => {
+                            setEditMode(`button-text-${btn.id}`);
+                            setFocusedSection(`button-${btn.id}`);
+                          }}
                           className="inline-block py-2 px-6 bg-valasys-orange text-white rounded text-sm font-bold hover:bg-orange-600 cursor-pointer transition-all"
                           style={{
                             border:
-                              hoveredSection === `button-${btn.id}`
-                                ? "1px dashed white"
-                                : "none",
+                              focusedSection === `button-${btn.id}`
+                                ? "2px solid white"
+                                : hoveredSection === `button-${btn.id}`
+                                  ? "2px dotted white"
+                                  : "none",
                           }}
                         >
                           {btn.text}
                         </button>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Link: {btn.link || "#"}
+                        </div>
+                        {focusedSection === `button-${btn.id}` && (
+                          <SectionToolbar
+                            onAdd={handleAddButton}
+                            onCopy={() => handleDuplicateButton(btn.id)}
+                            onDelete={() => handleDeleteButton(btn.id)}
+                          />
+                        )}
                       </div>
-                      <div className="text-xs text-gray-500 mt-1">
-                        Link: {btn.link || "#"}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
             </div>
           )}
         </div>

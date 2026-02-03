@@ -907,17 +907,49 @@ export function renderBlockToHTML(block: ContentBlock): string {
       const twoColBlock = block as any;
       const width = `${twoColBlock.width}${twoColBlock.widthUnit}`;
       const cardsHtml = twoColBlock.cards
-        ?.map(
-          (card: any) =>
-            `<div style="width: 48%; display: inline-block; vertical-align: top; padding-right: 10px; box-sizing: border-box;">
-              <div style="background-color: ${card.backgroundColor}; color: ${card.textColor}; padding: ${card.padding}px; border-radius: ${card.borderRadius}px; margin: ${card.margin}px;">
-                <h3 style="margin: 0 0 12px 0; font-size: 18px; font-weight: bold;">${card.title}</h3>
-                <p style="margin: 0; font-size: 14px; line-height: 1.5;">${card.description}</p>
+        ?.map((card: any) => {
+          let imageHtml = "";
+          const contentPadding = Math.max(12, card.padding || 16);
+          if (card.image) {
+            const imageTag = `<img src="${card.image}" alt="${card.imageAlt || ""}" style="width: 100%; height: 100%; display: block; border-radius: ${card.borderRadius}px; object-fit: cover; border: none; cursor: pointer;" />`;
+            if (card.imageLink) {
+              let href = card.imageLink;
+              if (card.imageLinkType === "email") {
+                href = `mailto:${card.imageLink}`;
+              } else {
+                if (!href.startsWith("http")) {
+                  href = `https://${href}`;
+                }
+              }
+              const target =
+                card.imageLinkType === "email"
+                  ? ""
+                  : ` target="_blank" rel="noopener noreferrer"`;
+              imageHtml = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                  <a href="${href}"${target} style="text-decoration: none; display: block; width: 100%; height: 100%;">
+                    ${imageTag}
+                  </a>
+                </div>`;
+            } else {
+              imageHtml = `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                  ${imageTag}
+                </div>`;
+            }
+          }
+          return `<div style="width: 48%; display: inline-block; vertical-align: top; padding-right: 10px; box-sizing: border-box;">
+              <div style="background-color: ${card.backgroundColor}; color: ${card.textColor}; border-radius: ${card.borderRadius}px; margin: ${card.margin}px; overflow: hidden; border: none; display: flex; flex-direction: column; height: 400px;">
+                <div style="height: 160px; overflow: hidden; flex-shrink: 0;">
+                  ${imageHtml}
+                </div>
+                <div style="padding: ${contentPadding}px; margin: 0; border: none; flex: 1; overflow: hidden;">
+                  <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: bold;">${card.title}</h3>
+                  <p style="margin: 0; font-size: 13px; line-height: 1.4;">${card.description}</p>
+                </div>
               </div>
-            </div>`,
-        )
+            </div>`;
+        })
         .join("");
-      return `<div style="width: ${width};"><div style="display: flex; gap: 20px;">${cardsHtml}</div></div>`;
+      return `<div style="width: ${width};"><div style="display: flex; gap: 20px; border: none;">${cardsHtml}</div></div>`;
     }
     case "stats": {
       const statsBlock = block as any;

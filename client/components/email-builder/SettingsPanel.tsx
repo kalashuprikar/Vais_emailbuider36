@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, Copy, Plus } from "lucide-react";
 import { SocialLinksEditor } from "./SocialLinksEditor";
 import { FooterSocialLinksEditor } from "./FooterSocialLinksEditor";
 import { generateId } from "./utils";
@@ -54,6 +54,16 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   const [videoHeightInput, setVideoHeightInput] = useState<string>(
     String(block?.type === "video" ? (block.height ?? 200) : 200),
   );
+  const [twoCardWidthInput, setTwoCardWidthInput] = useState<string>(
+    String(
+      block?.type === "twoColumnCard" ? ((block as any).width ?? 100) : 100,
+    ),
+  );
+  const [twoCardHeightInput, setTwoCardHeightInput] = useState<string>(
+    String(
+      block?.type === "twoColumnCard" ? ((block as any).height ?? 300) : 300,
+    ),
+  );
 
   // Update input states when block changes
   React.useEffect(() => {
@@ -62,6 +72,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
     } else if (block?.type === "video") {
       setVideoWidthInput(String(block.width ?? 300));
       setVideoHeightInput(String(block.height ?? 200));
+    } else if (block?.type === "twoColumnCard") {
+      setTwoCardWidthInput(String((block as any).width ?? 100));
+      setTwoCardHeightInput(String((block as any).height ?? 300));
     }
   }, [block?.id, block?.type, block?.width, block?.height]);
 
@@ -1443,20 +1456,41 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     crossOrigin="anonymous"
                     className="max-w-full max-h-full"
                     onError={(e) => {
-                      console.error(
-                        "❌ Image failed to load. This may be due to CORS restrictions or an invalid URL.",
-                        (block as any).src,
-                      );
-                      (e.target as HTMLImageElement).style.display = "none";
-                      const parent = (e.target as HTMLImageElement)
-                        .parentElement;
-                      if (parent) {
-                        const errorDiv = document.createElement("div");
-                        errorDiv.className =
-                          "text-gray-400 text-xs text-center";
-                        errorDiv.textContent =
-                          "Image failed to load (CORS or invalid URL)";
-                        parent.appendChild(errorDiv);
+                      const imgElement = e.target as HTMLImageElement;
+                      const currentSrc = imgElement.src;
+
+                      // Check if this is the original URL or already a proxy attempt
+                      if (
+                        !currentSrc.includes("cors-anywhere") &&
+                        !currentSrc.includes("corsproxy")
+                      ) {
+                        console.warn(
+                          "⚠️ Image blocked by CORS. Retrying with CORS proxy...",
+                          (block as any).src,
+                        );
+                        // Try with CORS proxy
+                        imgElement.src = `https://cors-anywhere.herokuapp.com/${(block as any).src}`;
+
+                        // Set a timeout to show error if proxy also fails
+                        imgElement.onerror = () => {
+                          imgElement.style.display = "none";
+                          const parent = imgElement.parentElement;
+                          if (parent) {
+                            const errorDiv = document.createElement("div");
+                            errorDiv.className =
+                              "text-gray-400 text-xs text-center p-4";
+                            errorDiv.innerHTML = `
+                              <div style="margin-bottom: 8px;">⚠️ Image failed to load</div>
+                              <div style="font-size: 11px; color: #999; margin-bottom: 8px;">
+                                The image server is blocking requests (CORS restricted)
+                              </div>
+                              <div style="font-size: 11px; color: #999;">
+                                <strong>Solution:</strong> Download and upload the image directly
+                              </div>
+                            `;
+                            parent.appendChild(errorDiv);
+                          }
+                        };
                       }
                     }}
                   />
@@ -1494,10 +1528,19 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   }
                   className="flex-1 focus:ring-valasys-orange focus:ring-2"
                 />
-                <Button variant="outline" size="sm" className="px-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2"
+                  title="Images must allow CORS requests. If using external URLs, ensure the server allows cross-origin requests. Use file upload as an alternative."
+                >
                   ⓘ
                 </Button>
               </div>
+              <p className="text-xs text-gray-500 mt-2">
+                ⚠️ External URLs may not load due to CORS restrictions. Use file
+                upload for reliable image hosting.
+              </p>
             </div>
 
             <div>
@@ -1532,8 +1575,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                     Type
                   </Label>
                   <select
-                    value={linkType}
-                    onChange={(e) => setLinkType(e.target.value)}
+                    value={(block as any).linkType || "url"}
+                    onChange={(e) =>
+                      onBlockUpdate({
+                        ...block,
+                        linkType: e.target.value as "url" | "page" | "email",
+                      })
+                    }
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-valasys-orange focus:border-transparent"
                   >
                     <option value="url">Absolute Link (URL)</option>
@@ -1549,6 +1597,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <Input
                     type="text"
                     placeholder="https://example.com"
+                    value={(block as any).linkTarget || ""}
+                    onChange={(e) =>
+                      onBlockUpdate({
+                        ...block,
+                        linkTarget: e.target.value,
+                      })
+                    }
                     className="focus:ring-valasys-orange focus:ring-2"
                   />
                 </div>
@@ -1560,6 +1615,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   <Input
                     type="text"
                     placeholder="Hover text"
+                    value={(block as any).linkTooltip || ""}
+                    onChange={(e) =>
+                      onBlockUpdate({
+                        ...block,
+                        linkTooltip: e.target.value,
+                      })
+                    }
                     className="focus:ring-valasys-orange focus:ring-2"
                   />
                 </div>
@@ -1568,6 +1630,14 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   variant="link"
                   size="sm"
                   className="text-xs h-auto p-0 text-valasys-orange"
+                  onClick={() =>
+                    onBlockUpdate({
+                      ...block,
+                      linkType: undefined,
+                      linkTarget: "",
+                      linkTooltip: "",
+                    })
+                  }
                 >
                   Remove link
                 </Button>
@@ -5793,6 +5863,50 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           onBlockUpdate({ ...twoColBlock, cards: updatedCards });
         };
 
+        const handleDuplicateCard = () => {
+          if (!selectedCard) return;
+          const duplicatedCard = {
+            ...JSON.parse(JSON.stringify(selectedCard)),
+            id: generateId(),
+          };
+          const newCards = [...twoColBlock.cards, duplicatedCard];
+          onBlockUpdate({ ...twoColBlock, cards: newCards });
+          setSelectedCardId(duplicatedCard.id);
+        };
+
+        const handleAddCard = () => {
+          const newCard = {
+            id: generateId(),
+            title: "Card Title",
+            description: "Add your card description here",
+            image: "",
+            imageAlt: "",
+            imageWidth: undefined,
+            imageHeight: undefined,
+            imageLink: "",
+            imageLinkType: "url" as const,
+            backgroundColor: "#333333",
+            textColor: "#ffffff",
+            borderRadius: 8,
+            padding: 16,
+            margin: 8,
+          };
+          const newCards = [...twoColBlock.cards, newCard];
+          onBlockUpdate({ ...twoColBlock, cards: newCards });
+          setSelectedCardId(newCard.id);
+        };
+
+        const handleDeleteCard = () => {
+          if (!selectedCard) return;
+          const newCards = twoColBlock.cards.filter(
+            (card: any) => card.id !== selectedCardId,
+          );
+          if (newCards.length > 0) {
+            setSelectedCardId(newCards[0].id);
+          }
+          onBlockUpdate({ ...twoColBlock, cards: newCards });
+        };
+
         return (
           <div className="space-y-5">
             <div>
@@ -5814,6 +5928,248 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   </button>
                 ))}
               </div>
+              <div className="flex gap-2 mb-4">
+                <Button
+                  onClick={handleAddCard}
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 text-xs"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Add Card
+                </Button>
+                {twoColBlock.cards?.length > 1 && (
+                  <>
+                    <Button
+                      onClick={handleDuplicateCard}
+                      size="sm"
+                      variant="outline"
+                      className="text-xs"
+                      title="Copy this card"
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={handleDeleteCard}
+                      size="sm"
+                      variant="outline"
+                      className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                      title="Delete this card"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-bold text-gray-900 mb-3">Layout</h4>
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs text-gray-700 mb-1 block">
+                    Card Width
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={twoCardWidthInput}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const numericValue = inputValue.replace(/[^\d]/g, "");
+
+                        setTwoCardWidthInput(inputValue);
+
+                        if (numericValue !== "") {
+                          const num = parseInt(numericValue);
+                          const maxValue =
+                            twoColBlock.widthUnit === "%" ? 100 : 1000;
+                          if (num >= 1 && num <= maxValue) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              width: num,
+                            });
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const inputValue = e.target.value;
+                        const numericValue = inputValue.replace(/[^\d]/g, "");
+                        if (numericValue === "") {
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            width: 100,
+                          });
+                          setTwoCardWidthInput("100");
+                        } else {
+                          const num = parseInt(numericValue);
+                          const maxValue =
+                            twoColBlock.widthUnit === "%" ? 100 : 1000;
+                          if (num > maxValue) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              width: maxValue,
+                            });
+                            setTwoCardWidthInput(String(maxValue));
+                          } else if (num < 1) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              width: 1,
+                            });
+                            setTwoCardWidthInput("1");
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          const currentWidth =
+                            parseInt(twoCardWidthInput) || 100;
+                          const maxValue =
+                            twoColBlock.widthUnit === "%" ? 100 : 1000;
+                          const newWidth = Math.min(currentWidth + 1, maxValue);
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            width: newWidth,
+                          });
+                          setTwoCardWidthInput(String(newWidth));
+                        } else if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          const currentWidth =
+                            parseInt(twoCardWidthInput) || 100;
+                          const newWidth = Math.max(1, currentWidth - 1);
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            width: newWidth,
+                          });
+                          setTwoCardWidthInput(String(newWidth));
+                        }
+                      }}
+                      className="flex-1 focus:ring-valasys-orange focus:ring-2"
+                    />
+                    <select
+                      value={twoColBlock.widthUnit}
+                      onChange={(e) =>
+                        onBlockUpdate({
+                          ...twoColBlock,
+                          widthUnit: e.target.value as "px" | "%",
+                        })
+                      }
+                      className="px-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-valasys-orange"
+                    >
+                      <option value="%">%</option>
+                      <option value="px">px</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-700 mb-1 block">
+                    Card Height
+                  </Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={twoCardHeightInput}
+                      onChange={(e) => {
+                        const inputValue = e.target.value;
+                        const numericValue = inputValue.replace(/[^\d]/g, "");
+
+                        setTwoCardHeightInput(inputValue);
+
+                        if (numericValue !== "") {
+                          const num = parseInt(numericValue);
+                          const maxValue =
+                            (twoColBlock as any).heightUnit === "%"
+                              ? 100
+                              : 1000;
+                          if (num >= 1 && num <= maxValue) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              height: num,
+                            });
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        const inputValue = e.target.value;
+                        const numericValue = inputValue.replace(/[^\d]/g, "");
+                        if (numericValue === "") {
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            height: 300,
+                          });
+                          setTwoCardHeightInput("300");
+                        } else {
+                          const num = parseInt(numericValue);
+                          const maxValue =
+                            (twoColBlock as any).heightUnit === "%"
+                              ? 100
+                              : 1000;
+                          if (num > maxValue) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              height: maxValue,
+                            });
+                            setTwoCardHeightInput(String(maxValue));
+                          } else if (num < 1) {
+                            onBlockUpdate({
+                              ...twoColBlock,
+                              height: 1,
+                            });
+                            setTwoCardHeightInput("1");
+                          }
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowUp") {
+                          e.preventDefault();
+                          const currentHeight =
+                            parseInt(twoCardHeightInput) || 300;
+                          const maxValue =
+                            (twoColBlock as any).heightUnit === "%"
+                              ? 100
+                              : 1000;
+                          const newHeight = Math.min(
+                            currentHeight + 1,
+                            maxValue,
+                          );
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            height: newHeight,
+                          });
+                          setTwoCardHeightInput(String(newHeight));
+                        } else if (e.key === "ArrowDown") {
+                          e.preventDefault();
+                          const currentHeight =
+                            parseInt(twoCardHeightInput) || 300;
+                          const newHeight = Math.max(1, currentHeight - 1);
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            height: newHeight,
+                          });
+                          setTwoCardHeightInput(String(newHeight));
+                        }
+                      }}
+                      className="flex-1 focus:ring-valasys-orange focus:ring-2"
+                    />
+                    <select
+                      value={(twoColBlock as any).heightUnit || "px"}
+                      onChange={(e) =>
+                        onBlockUpdate({
+                          ...twoColBlock,
+                          heightUnit: e.target.value as "px" | "%",
+                        })
+                      }
+                      className="px-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-valasys-orange"
+                    >
+                      <option value="%">%</option>
+                      <option value="px">px</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {selectedCard && (
@@ -5825,13 +6181,38 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   >
                     Card Title
                   </Label>
-                  <Input
-                    id="cardTitle"
-                    value={selectedCard.title}
-                    onChange={(e) => handleCardUpdate("title", e.target.value)}
-                    placeholder="Enter card title"
-                    className="focus:ring-valasys-orange focus:ring-2"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="cardTitle"
+                      value={selectedCard.title}
+                      onChange={(e) =>
+                        handleCardUpdate("title", e.target.value)
+                      }
+                      placeholder="Enter card title"
+                      className="flex-1 focus:ring-valasys-orange focus:ring-2"
+                    />
+                    <Button
+                      onClick={() => {
+                        const newTitle = selectedCard.title + " (copy)";
+                        handleCardUpdate("title", newTitle);
+                      }}
+                      size="sm"
+                      variant="outline"
+                      title="Duplicate title text"
+                      className="text-xs"
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      onClick={() => handleCardUpdate("title", "")}
+                      size="sm"
+                      variant="outline"
+                      title="Clear title"
+                      className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div>
@@ -5841,21 +6222,247 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   >
                     Card Description
                   </Label>
-                  <textarea
-                    id="cardDescription"
-                    value={selectedCard.description}
+                  <div className="flex gap-2">
+                    <textarea
+                      id="cardDescription"
+                      value={selectedCard.description}
+                      onChange={(e) =>
+                        handleCardUpdate("description", e.target.value)
+                      }
+                      placeholder="Enter card description"
+                      rows={4}
+                      className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-valasys-orange focus:border-transparent"
+                    />
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        onClick={() => {
+                          const newDesc = selectedCard.description + " (copy)";
+                          handleCardUpdate("description", newDesc);
+                        }}
+                        size="sm"
+                        variant="outline"
+                        title="Duplicate description text"
+                        className="text-xs"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        onClick={() => handleCardUpdate("description", "")}
+                        size="sm"
+                        variant="outline"
+                        title="Clear description"
+                        className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-gray-700 mb-2 block">
+                    Card Image
+                  </Label>
+                  {selectedCard.image ? (
+                    <div className="space-y-2">
+                      <div className="w-full rounded border border-gray-300 overflow-hidden">
+                        <img
+                          src={selectedCard.image}
+                          alt={selectedCard.imageAlt || "Card image"}
+                          className="w-full h-32 object-cover"
+                          onError={(e) => {
+                            const imgElement = e.target as HTMLImageElement;
+                            imgElement.style.display = "none";
+                            const parent = imgElement.parentElement;
+                            if (parent) {
+                              const errorDiv = document.createElement("div");
+                              errorDiv.className =
+                                "w-full h-32 bg-gray-200 flex items-center justify-center text-center p-2";
+                              errorDiv.innerHTML =
+                                '<p style="font-size: 11px; color: #999;">Image failed to load</p>';
+                              parent.appendChild(errorDiv);
+                            }
+                          }}
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          // Batch all updates into a single state update
+                          const updatedCards = twoColBlock.cards.map(
+                            (card: any) =>
+                              card.id === selectedCardId
+                                ? {
+                                    ...card,
+                                    image: "",
+                                    imageAlt: "",
+                                    imageWidth: undefined,
+                                    imageHeight: undefined,
+                                  }
+                                : card,
+                          );
+                          onBlockUpdate({
+                            ...twoColBlock,
+                            cards: updatedCards,
+                          });
+                        }}
+                        className="w-full px-3 py-2 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="block w-full px-3 py-3 bg-gray-100 rounded text-center cursor-pointer hover:bg-gray-200 transition-colors border border-gray-300">
+                      <p className="text-xs text-gray-600">Click to upload</p>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              // Batch both image updates into a single state update
+                              const updatedCards = twoColBlock.cards.map(
+                                (card: any) =>
+                                  card.id === selectedCardId
+                                    ? {
+                                        ...card,
+                                        image: event.target?.result as string,
+                                        imageAlt: file.name,
+                                      }
+                                    : card,
+                              );
+                              onBlockUpdate({
+                                ...twoColBlock,
+                                cards: updatedCards,
+                              });
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-gray-700 mb-2 block">
+                    Image URL
+                  </Label>
+                  <Input
+                    value={selectedCard.image || ""}
+                    onChange={(e) => handleCardUpdate("image", e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="text-xs focus:ring-valasys-orange focus:ring-2"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Paste an image URL or upload a file above
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-gray-700 mb-2 block">
+                    Image Link Type
+                  </Label>
+                  <select
+                    value={selectedCard.imageLinkType || "url"}
                     onChange={(e) =>
-                      handleCardUpdate("description", e.target.value)
+                      handleCardUpdate("imageLinkType", e.target.value)
                     }
-                    placeholder="Enter card description"
-                    rows={4}
-                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-valasys-orange focus:border-transparent"
+                    className="w-full px-3 py-2 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-valasys-orange"
+                  >
+                    <option value="url">URL</option>
+                    <option value="email">Email</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label className="text-xs font-semibold text-gray-700 mb-2 block">
+                    Image Link
+                  </Label>
+                  <Input
+                    value={selectedCard.imageLink || ""}
+                    onChange={(e) =>
+                      handleCardUpdate("imageLink", e.target.value)
+                    }
+                    placeholder={
+                      selectedCard.imageLinkType === "email"
+                        ? "example@email.com"
+                        : "https://example.com"
+                    }
+                    className="text-xs focus:ring-valasys-orange focus:ring-2"
                   />
                 </div>
 
                 <div>
                   <h4 className="text-xs font-bold text-gray-900 mb-3">
-                    Styling
+                    Image Styling
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs text-gray-700 mb-2 block">
+                        Image Width
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          min="50"
+                          value={selectedCard.imageWidth || ""}
+                          onChange={(e) =>
+                            handleCardUpdate(
+                              "imageWidth",
+                              e.target.value
+                                ? parseInt(e.target.value)
+                                : undefined,
+                            )
+                          }
+                          placeholder="Auto"
+                          className="flex-1 text-xs focus:ring-valasys-orange focus:ring-2"
+                        />
+                        <span className="px-2 py-1 text-sm text-gray-600">
+                          px
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave empty for auto
+                      </p>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs text-gray-700 mb-2 block">
+                        Image Height
+                      </Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          min="50"
+                          value={selectedCard.imageHeight || ""}
+                          onChange={(e) =>
+                            handleCardUpdate(
+                              "imageHeight",
+                              e.target.value
+                                ? parseInt(e.target.value)
+                                : undefined,
+                            )
+                          }
+                          placeholder="Auto"
+                          className="flex-1 text-xs focus:ring-valasys-orange focus:ring-2"
+                        />
+                        <span className="px-2 py-1 text-sm text-gray-600">
+                          px
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave empty for auto
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xs font-bold text-gray-900 mb-3">
+                    Card Styling
                   </h4>
                   <div className="space-y-3">
                     <div>
