@@ -6182,38 +6182,31 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   >
                     Card Title
                   </Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="cardTitle"
-                      value={selectedCard.title}
-                      onChange={(e) =>
-                        handleCardUpdate("title", e.target.value)
+                  <Input
+                    id="cardTitle"
+                    value={selectedCard.titles?.[0]?.content || selectedCard.title || ""}
+                    onChange={(e) => {
+                      if (selectedCard.titles && selectedCard.titles.length > 0) {
+                        const updatedCards = twoColBlock.cards.map((card: any) =>
+                          card.id === selectedCardId
+                            ? {
+                                ...card,
+                                titles: [
+                                  { ...card.titles[0], content: e.target.value },
+                                  ...card.titles.slice(1),
+                                ],
+                              }
+                            : card,
+                        );
+                        onBlockUpdate({ ...twoColBlock, cards: updatedCards });
+                      } else {
+                        handleCardUpdate("title", e.target.value);
                       }
-                      placeholder="Enter card title"
-                      className="flex-1 focus:ring-valasys-orange focus:ring-2"
-                    />
-                    <Button
-                      onClick={() => {
-                        const newTitle = selectedCard.title + " (copy)";
-                        handleCardUpdate("title", newTitle);
-                      }}
-                      size="sm"
-                      variant="outline"
-                      title="Duplicate title text"
-                      className="text-xs"
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      onClick={() => handleCardUpdate("title", "")}
-                      size="sm"
-                      variant="outline"
-                      title="Clear title"
-                      className="text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                  </div>
+                    }}
+                    placeholder="Enter card title"
+                    className="flex-1 focus:ring-valasys-orange focus:ring-2"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Use card editor to duplicate sections</p>
                 </div>
 
                 <div>
