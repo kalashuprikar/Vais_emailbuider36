@@ -4,53 +4,6 @@ import { Upload, Trash2, Plus, Copy } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-// Helper function to copy text to clipboard with fallbacks
-const copyToClipboard = async (text: string): Promise<boolean> => {
-  try {
-    // Try modern Clipboard API first
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch (err) {
-    console.warn("Clipboard API failed, trying fallback:", err);
-  }
-
-  // Fallback: use textarea method
-  try {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position = "fixed";
-    textArea.style.left = "-999999px";
-    textArea.style.top = "-999999px";
-    textArea.style.opacity = "0";
-    document.body.appendChild(textArea);
-
-    // For iOS compatibility
-    if (navigator.userAgent.match(/ipad|iphone/i)) {
-      const range = document.createRange();
-      range.selectNodeContents(textArea);
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-      textArea.setSelectionRange(0, 999999);
-    } else {
-      textArea.select();
-    }
-
-    const success = document.execCommand("copy");
-    document.body.removeChild(textArea);
-
-    if (success) {
-      return true;
-    }
-  } catch (err) {
-    console.error("Fallback clipboard copy failed:", err);
-  }
-
-  return false;
-};
-
 interface TwoColumnCardBlockComponentProps {
   block: TwoColumnCardBlock;
   isSelected: boolean;
