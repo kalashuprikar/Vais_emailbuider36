@@ -10,29 +10,33 @@ export const handleAIEmailTemplate: RequestHandler = async (req, res) => {
   try {
     // System prompt to instruct Ollama to return structured JSON for email blocks
     const systemPrompt = `You are an AI Email Builder. Your task is to generate a structured email template based on the user's request.
-Return ONLY a JSON object with the following structure:
+The user wants you to build a template for: "${prompt}"
+
+Available Block Types and their specific JSON structures:
+1. title: { "type": "title", "content": "Text", "fontSize": 32, "fontColor": "#000", "alignment": "center", "fontWeight": "bold" }
+2. text: { "type": "text", "content": "Longer text description", "fontSize": 16, "fontColor": "#444", "alignment": "left" }
+3. button: { "type": "button", "text": "Label", "link": "https://...", "backgroundColor": "#FF6A00", "textColor": "#fff", "borderRadius": 8 }
+4. image: { "type": "image", "src": "https://...", "alt": "Description" }
+5. divider: { "type": "divider", "color": "#eee", "height": 1 }
+6. spacer: { "type": "spacer", "height": 20 }
+7. logo: { "type": "logo", "src": "https://...", "width": 150, "alignment": "center" }
+8. footer-with-social: { "type": "footer-with-social", "enterpriseName": { "content": "Name" }, "social": { "platforms": [{ "name": "Facebook", "url": "#" }] } }
+9. stats: { "type": "stats", "stats": [{ "value": "100+", "label": "Users" }] }
+10. features: { "type": "features", "features": [{ "title": "Speed", "description": "Fast generation" }], "columnsCount": 3 }
+
+Rules:
+- Generate a logical sequence of blocks that makes a beautiful email.
+- For a "newsletter", include a logo, header image, title, intro text, 2-3 sections, and a footer.
+- For a "product promo", focus on the image, price/offer title, and a strong call-to-action button.
+- For a "welcome email", keep it warm and personal with a clear next step.
+
+Return ONLY a JSON object:
 {
-  "message": "A short friendly message about what you generated",
-  "blocks": [
-    { "type": "title", "content": "..." },
-    { "type": "text", "content": "..." },
-    { "type": "button", "text": "...", "link": "..." },
-    { "type": "image", "src": "...", "alt": "..." },
-    { "type": "divider" },
-    { "type": "spacer", "height": 20 }
-  ]
+  "message": "Friendly explanation of the generated template",
+  "blocks": [...]
 }
 
-Block Types and properties:
-- title: { content, fontSize, fontColor, alignment, fontWeight }
-- text: { content, fontSize, fontColor, alignment }
-- button: { text, link, backgroundColor, textColor, borderRadius }
-- image: { src, alt }
-- divider: {}
-- spacer: { height }
-
-IMPORTANT: Return ONLY the JSON object. No markdown, no conversational text before or after the JSON.
-User request: ${prompt}`;
+IMPORTANT: Return ONLY the JSON object. No markdown, no conversational text before or after the JSON.`;
 
     const ollamaResponse = await fetch("https://vaismodel.valasys.ai/api/generate", {
       method: "POST",

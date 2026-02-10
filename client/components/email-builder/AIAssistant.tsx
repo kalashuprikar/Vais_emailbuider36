@@ -15,7 +15,10 @@ import {
   createImageBlock,
   createSpacerBlock,
   createLogoBlock,
-  createFooterWithSocialBlock
+  createFooterWithSocialBlock,
+  createStatsBlock,
+  createFeaturesBlock,
+  createTwoColumnCardBlock
 } from "./utils";
 
 interface AIAssistantProps {
@@ -48,6 +51,9 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
     "Build a monthly newsletter",
     "Build a welcome email",
     "Build a product promo",
+    "Build a sales outreach",
+    "Build a weekly update with stats",
+    "Build an event invitation",
   ];
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -80,6 +86,12 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
           return { ...createLogoBlock(block.src), ...block, id };
         case "footer-with-social":
           return { ...createFooterWithSocialBlock(), ...block, id };
+        case "stats":
+          return { ...createStatsBlock(), ...block, id };
+        case "features":
+          return { ...createFeaturesBlock(), ...block, id };
+        case "twoColumnCard":
+          return { ...createTwoColumnCardBlock(), ...block, id };
         default:
           return { ...block, id };
       }
@@ -129,6 +141,12 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({
       const isBuildCommand = input.toLowerCase().includes("build") || input.toLowerCase().includes("newsletter");
       if (isBuildCommand && currentTemplate.blocks.length === 0 && blocks.length > 0) {
         handleApplyAll(blocks);
+        const autoApplyMessage: Message = {
+          id: generateId(),
+          role: "assistant",
+          content: "I've automatically applied this template to your canvas since it was empty. You can now edit it manually!",
+        };
+        setMessages((prev) => [...prev, autoApplyMessage]);
       }
     } catch (error) {
       console.error("AI Generation Error:", error);
